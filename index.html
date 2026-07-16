@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>中级注册安全工程师练习系统</title>
+    <meta
+      name="description"
+      content="适配移动端和 PC 端的中级注册安全工程师练习系统，支持每日计划、错题回顾、知识点学习和本地数据导入。"
+    />
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Single User / Static Frontend</p>
+          <h1>中级注册安全工程师练习系统</h1>
+          <p class="subtitle">
+            开箱即用，不需要注册登录。训练记录只保存在当前设备浏览器中。
+          </p>
+        </div>
+        <button class="ghost-button" id="reset-session-button" type="button">
+          结束本次练习
+        </button>
+      </header>
+
+      <main class="layout">
+        <aside class="sidebar">
+          <nav class="nav-grid" aria-label="主导航">
+            <button class="nav-button is-active" data-view-target="home" type="button">
+              首页总览
+            </button>
+            <button class="nav-button" data-view-target="practice" type="button">
+              开始练习
+            </button>
+            <button class="nav-button" data-view-target="mistakes" type="button">
+              错题集合
+            </button>
+            <button class="nav-button" data-view-target="knowledge" type="button">
+              学习知识点
+            </button>
+            <button class="nav-button" data-view-target="manage" type="button">
+              数据管理
+            </button>
+          </nav>
+
+          <section class="panel compact-panel">
+            <p class="panel-label">训练规则</p>
+            <ul class="rule-list">
+              <li>默认每日训练目标：20 题</li>
+              <li>错题当天会再次回放</li>
+              <li>连续答对越多，复习间隔越长</li>
+              <li>连续稳定掌握后，题目出现频率降低</li>
+            </ul>
+          </section>
+        </aside>
+
+        <section class="content">
+          <section class="banner warning-banner" id="data-banner">
+            当前内置的是演示题库。正式使用时，请导入你已核验过的正式题库和知识点。
+          </section>
+
+          <section class="panel subject-panel">
+            <div class="panel-header">
+              <div>
+                <p class="panel-label">科目选择</p>
+                <h3 id="subject-heading">请选择练习科目</h3>
+              </div>
+              <p class="panel-copy" id="subject-summary"></p>
+            </div>
+            <div class="subject-switcher" id="subject-switcher"></div>
+          </section>
+
+          <section class="view is-visible" data-view="home">
+            <div class="hero-card">
+              <div>
+                <p class="eyebrow">训练总览</p>
+                <h2 id="dashboard-title">今日训练计划</h2>
+                <p id="dashboard-summary" class="hero-copy"></p>
+              </div>
+              <div class="rank-badge" id="rank-badge">
+                <span>当前评级</span>
+                <strong id="rank-label">入门</strong>
+                <small id="rank-detail">已掌握 0%</small>
+              </div>
+            </div>
+
+            <div class="metrics-grid" id="metrics-grid"></div>
+
+            <div class="home-grid">
+              <section class="panel spotlight-panel">
+                <div class="panel-header">
+                  <div>
+                    <p class="panel-label">20 秒自动轮播</p>
+                    <h3>知识点聚焦</h3>
+                  </div>
+                  <button class="ghost-button" id="next-knowledge-button" type="button">
+                    下一条
+                  </button>
+                </div>
+                <article id="knowledge-spotlight" class="spotlight-card"></article>
+              </section>
+
+              <section class="panel">
+                <div class="panel-header">
+                  <div>
+                    <p class="panel-label">快捷入口</p>
+                    <h3>开始今日训练</h3>
+                  </div>
+                </div>
+                <div class="quick-actions">
+                  <button class="primary-button" id="start-daily-button" type="button">
+                    继续 / 生成今日 20 题
+                  </button>
+                  <button class="secondary-button" id="review-mistakes-button" type="button">
+                    只看错题
+                  </button>
+                  <button class="secondary-button" id="browse-knowledge-button" type="button">
+                    学知识点
+                  </button>
+                </div>
+                <div class="daily-status" id="daily-status"></div>
+              </section>
+            </div>
+          </section>
+
+          <section class="view" data-view="practice">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Practice</p>
+                <h2>开始练习</h2>
+              </div>
+              <div class="practice-actions">
+                <button class="secondary-button" id="practice-daily-button" type="button">
+                  今日计划
+                </button>
+                <button class="secondary-button" id="practice-random-button" type="button">
+                  随机 20 题
+                </button>
+                <button class="secondary-button" id="practice-mistakes-button" type="button">
+                  错题复练
+                </button>
+              </div>
+            </div>
+
+            <section class="panel practice-panel">
+              <div class="practice-status" id="practice-status"></div>
+              <div id="question-card" class="question-card empty-card">
+                请选择训练模式开始练习。
+              </div>
+            </section>
+          </section>
+
+          <section class="view" data-view="mistakes">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Mistakes</p>
+                <h2>错题集合</h2>
+              </div>
+              <button class="secondary-button" id="mistakes-practice-button" type="button">
+                立即复练
+              </button>
+            </div>
+            <section class="panel">
+              <div id="mistake-summary" class="mistake-summary"></div>
+              <div id="mistake-list" class="stack-list"></div>
+            </section>
+          </section>
+
+          <section class="view" data-view="knowledge">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Knowledge</p>
+                <h2>学习知识点</h2>
+              </div>
+              <input
+                id="knowledge-search"
+                class="search-input"
+                type="search"
+                placeholder="搜索知识点关键词"
+              />
+            </div>
+            <section class="panel knowledge-audio-panel">
+              <div class="panel-header">
+                <div>
+                  <p class="panel-label">Knowledge Audio</p>
+                  <h3>知识点顺序播放</h3>
+                </div>
+              </div>
+              <p class="panel-copy">
+                按当前科目和当前搜索结果顺序播放知识点。讯飞参数改为项目内配置，不再要求页面输入。
+              </p>
+              <p class="panel-copy">
+                配置文件：<code>assets/app-config.js</code>
+              </p>
+              <input id="tts-status-text" class="search-input" type="text" placeholder="状态说明只读" readonly />
+              <div class="practice-actions">
+                <button class="primary-button" id="tts-play-all-button" type="button">
+                  从第 1 条开始播放
+                </button>
+                <button class="secondary-button" id="tts-play-current-button" type="button">
+                  播放当前第 1 条
+                </button>
+                <button class="secondary-button" id="tts-prev-button" type="button">
+                  上一条
+                </button>
+                <button class="secondary-button" id="tts-next-button" type="button">
+                  下一条
+                </button>
+                <button class="ghost-button" id="tts-stop-button" type="button">
+                  停止播放
+                </button>
+              </div>
+              <div class="daily-status" id="tts-status"></div>
+              <audio id="tts-audio" controls preload="none" class="tts-audio"></audio>
+            </section>
+            <section id="knowledge-list" class="knowledge-grid"></section>
+          </section>
+
+          <section class="view" data-view="manage">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Manage</p>
+                <h2>数据管理</h2>
+              </div>
+            </div>
+
+            <div class="manage-grid">
+              <section class="panel">
+                <div class="panel-header">
+                  <div>
+                    <p class="panel-label">导入正式题库</p>
+                    <h3>JSON 文件导入</h3>
+                  </div>
+                </div>
+                <p class="panel-copy">
+                  支持导入你整理好的题库、知识点和等级配置。推荐后续把 Word / PPT
+                  内容整理成 JSON 后直接导入。
+                </p>
+                <input id="import-file" type="file" accept=".json,application/json" />
+                <button class="primary-button" id="import-button" type="button">
+                  导入题库
+                </button>
+                <p id="import-feedback" class="feedback-text"></p>
+              </section>
+
+              <section class="panel">
+                <div class="panel-header">
+                  <div>
+                    <p class="panel-label">备份学习进度</p>
+                    <h3>导出本地记录</h3>
+                  </div>
+                </div>
+                <p class="panel-copy">
+                  导出当前题库和学习进度，方便在另一台设备恢复使用。
+                </p>
+                <button class="secondary-button" id="export-button" type="button">
+                  导出备份
+                </button>
+                <button class="ghost-button danger-button" id="reset-progress-button" type="button">
+                  清空学习进度
+                </button>
+              </section>
+
+              <section class="panel full-span">
+                <div class="panel-header">
+                  <div>
+                    <p class="panel-label">数据格式说明</p>
+                    <h3>题库 JSON 结构</h3>
+                  </div>
+                </div>
+                <pre class="code-block" id="format-preview"></pre>
+              </section>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="data/sample-data.js"></script>
+    <script src="assets/app-config.js"></script>
+    <script src="assets/app.js"></script>
+  </body>
+</html>
